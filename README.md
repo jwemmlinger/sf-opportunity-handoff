@@ -28,7 +28,7 @@ A Lightning Web Component (LWC) that enables loan officers to hand off opportuni
 
 ```bash
 # Clone the repository
-git clone https://github.com/YOUR_USERNAME/sf-opportunity-handoff.git
+git clone https://github.com/jwemmlinger/sf-opportunity-handoff.git
 cd sf-opportunity-handoff
 
 # Authenticate to your org
@@ -40,7 +40,7 @@ sf project deploy start --target-org myorg
 
 ### Option 2: Deploy Using Metadata API
 
-1. Download the ZIP file from the [Releases](https://github.com/YOUR_USERNAME/sf-opportunity-handoff/releases) page
+1. Download the ZIP file from the [Releases](https://github.com/jwemmlinger/sf-opportunity-handoff/releases) page
 2. Navigate to Setup → Deploy → Deploy in your Salesforce org
 3. Upload the ZIP file and deploy
 
@@ -262,8 +262,8 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## Support
 
-- **Issues**: [GitHub Issues](https://github.com/YOUR_USERNAME/sf-opportunity-handoff/issues)
-- **Discussions**: [GitHub Discussions](https://github.com/YOUR_USERNAME/sf-opportunity-handoff/discussions)
+- **Issues**: [GitHub Issues](https://github.com/jwemmlinger/sf-opportunity-handoff/issues)
+- **Discussions**: [GitHub Discussions](https://github.com/jwemmlinger/sf-opportunity-handoff/discussions)
 - **Trailblazer Community**: Tag your questions with `opportunity-handoff`
 
 ## Changelog

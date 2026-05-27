@@ -51,7 +51,7 @@ Enhancement suggestions are tracked as GitHub issues. Include:
 
 ```bash
 # Clone your fork
-git clone https://github.com/YOUR_USERNAME/sf-opportunity-handoff.git
+git clone https://github.com/jwemmlinger/sf-opportunity-handoff.git
 cd sf-opportunity-handoff
 
 # Install dependencies
@@ -165,7 +165,7 @@ Maintainers will:
 
 ## Questions?
 
-- Open a [Discussion](https://github.com/YOUR_USERNAME/sf-opportunity-handoff/discussions)
+- Open a [Discussion](https://github.com/jwemmlinger/sf-opportunity-handoff/discussions)
 - Tag [@maintainer] in an issue
 - Email: [your-email@example.com]
 
