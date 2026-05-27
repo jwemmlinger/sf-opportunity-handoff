@@ -1,0 +1,42 @@
+/* Additional styling if needed */
+.slds-media__figure {
+    margin-right: 0.75rem;
+}
+
+lightning-combobox {
+    display: block;
+}
+
+/* Task list styling */
+.task-list-container {
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.task-item {
+    border-bottom: 1px solid #e5e5e5;
+    padding: 0.5rem 0;
+    transition: background-color 0.2s ease;
+}
+
+.task-item:last-child {
+    border-bottom: none;
+}
+
+.task-item:hover {
+    background-color: #f3f3f3;
+    border-radius: 0.25rem;
+    padding-left: 0.25rem;
+    padding-right: 0.25rem;
+}
+
+/* Badge styling override */
+lightning-badge {
+    font-size: 0.75rem;
+}
+
+/* Progress bar styling */
+.slds-progress-bar__value {
+    background-color: #2e844a;
+    transition: width 0.3s ease;
+}

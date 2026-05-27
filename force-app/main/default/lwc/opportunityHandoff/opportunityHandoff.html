@@ -1,0 +1,264 @@
+<template>
+    <lightning-card title="Hand Off to Underwriter" icon-name="action:share">
+        <div class="slds-p-around_medium">
+            <!-- Loading Spinner -->
+            <template lwc:if={isLoading}>
+                <div class="slds-text-align_center slds-m-vertical_medium">
+                    <lightning-spinner
+                        alternative-text="Processing handoff"
+                        size="medium">
+                    </lightning-spinner>
+                    <p class="slds-m-top_small">Creating underwriting case...</p>
+                </div>
+            </template>
+
+            <!-- Form -->
+            <template lwc:if={isLoading}>
+                <!-- Hidden during loading -->
+            </template>
+            <template lwc:else>
+                <!-- Existing Tasks Section -->
+                <div class="slds-m-bottom_medium">
+                    <div class="slds-text-heading_small slds-m-bottom_small">
+                        <lightning-icon
+                            icon-name="utility:task"
+                            size="x-small"
+                            class="slds-m-right_xx-small">
+                        </lightning-icon>
+                        Pre-Handoff Task Checklist
+                    </div>
+
+                    <template lwc:if={hasTasks}>
+                        <!-- Task Summary Card -->
+                        <div class="slds-box slds-theme_default slds-m-bottom_small">
+                            <div class="slds-grid slds-grid_align-spread slds-m-bottom_small">
+                                <div class="slds-col">
+                                    <div class={completionStatusClass}>
+                                        <span class="slds-text-heading_medium">{taskSummary.completionPercentage}% Complete</span>
+                                    </div>
+                                    <p class="slds-text-body_small slds-text-color_weak">
+                                        {taskSummary.completedTasks} of {taskSummary.totalTasks} tasks completed
+                                    </p>
+                                </div>
+                                <div class="slds-col slds-text-align_right">
+                                    <template lwc:if={allTasksComplete}>
+                                        <lightning-badge label="Ready for Handoff" variant="success"></lightning-badge>
+                                    </template>
+                                    <template lwc:if={hasOverdueTasks}>
+                                        <lightning-badge label={overdueLabel} variant="error"></lightning-badge>
+                                    </template>
+                                    <template lwc:if={hasIncompleteTasks}>
+                                        <lightning-badge label={incompleteLabel} variant="warning"></lightning-badge>
+                                    </template>
+                                </div>
+                            </div>
+
+                            <!-- Progress Bar -->
+                            <div class="slds-progress-bar slds-progress-bar_large" aria-valuemin="0" aria-valuemax="100" aria-valuenow={taskSummary.completionPercentage} role="progressbar">
+                                <span class="slds-progress-bar__value" style={progressBarStyle}>
+                                    <span class="slds-assistive-text">{taskSummary.completionPercentage}% Complete</span>
+                                </span>
+                            </div>
+                        </div>
+
+                        <!-- Task List -->
+                        <div class="slds-box task-list-container">
+                            <template for:each={existingTasks} for:item="task">
+                                <div key={task.id} class="slds-grid slds-grid_align-spread slds-p-vertical_xx-small task-item">
+                                    <div class="slds-col slds-size_6-of-12">
+                                        <div class="slds-media slds-media_center">
+                                            <div class="slds-media__figure">
+                                                <lightning-icon
+                                                    icon-name={task.statusIcon}
+                                                    size="x-small"
+                                                    variant={task.isCompleted}
+                                                    class="slds-m-right_x-small">
+                                                </lightning-icon>
+                                            </div>
+                                            <div class="slds-media__body">
+                                                <p class={task.statusClass}>
+                                                    <span class="slds-text-body_small">{task.subject}</span>
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="slds-col slds-size_2-of-12 slds-text-align_center">
+                                        <lightning-badge label={task.status}></lightning-badge>
+                                    </div>
+                                    <div class="slds-col slds-size_2-of-12 slds-text-align_center">
+                                        <lightning-badge label={task.priority}></lightning-badge>
+                                    </div>
+                                    <div class="slds-col slds-size_2-of-12 slds-text-align_right">
+                                        <p class="slds-text-body_small slds-text-color_weak">{task.formattedDate}</p>
+                                    </div>
+                                </div>
+                            </template>
+                        </div>
+
+                        <!-- Warning for incomplete tasks -->
+                        <template lwc:if={hasIncompleteTasks}>
+                            <div class="slds-notify slds-notify_alert slds-theme_alert-texture slds-theme_warning slds-m-top_small" role="alert">
+                                <span class="slds-assistive-text">Warning</span>
+                                <span class="slds-icon_container slds-icon-utility-warning slds-m-right_x-small">
+                                    <lightning-icon icon-name="utility:warning" size="x-small" variant="warning"></lightning-icon>
+                                </span>
+                                <h2>
+                                    There are {taskSummary.incompleteTasks} incomplete task(s). Consider completing them before handoff.
+                                </h2>
+                            </div>
+                        </template>
+                    </template>
+
+                    <template lwc:if={hasNoTasks}>
+                        <div class="slds-box slds-theme_shade slds-text-align_center slds-p-around_medium">
+                            <lightning-icon
+                                icon-name="utility:info"
+                                size="small"
+                                class="slds-m-bottom_x-small">
+                            </lightning-icon>
+                            <p class="slds-text-body_small slds-text-color_weak">
+                                No tasks found for this opportunity.
+                            </p>
+                        </div>
+                    </template>
+                </div>
+
+                <div class="slds-border_top slds-m-vertical_medium"></div>
+
+                <!-- Underwriter Selection -->
+                <div class="slds-form-element slds-m-bottom_medium">
+                    <lightning-combobox
+                        name="underwriter"
+                        label="Select Underwriter"
+                        placeholder="Choose an underwriter"
+                        options={underwriters}
+                        value={selectedUnderwriterId}
+                        onchange={handleUnderwriterChange}
+                        required
+                        class="slds-m-bottom_small">
+                    </lightning-combobox>
+                    <template lwc:if={hasUnderwriters}>
+                        <p class="slds-text-color_weak slds-text-body_small">
+                            {underwriters.length} underwriter(s) available
+                        </p>
+                    </template>
+                    <template lwc:else>
+                        <p class="slds-text-color_error slds-text-body_small">
+                            No underwriters found. Check user profiles/roles.
+                        </p>
+                    </template>
+                </div>
+
+                <!-- Action Plan Selection -->
+                <div class="slds-form-element slds-m-bottom_medium">
+                    <lightning-combobox
+                        name="actionPlan"
+                        label="Select Action Plan"
+                        placeholder="Choose an action plan template"
+                        options={actionPlanTemplates}
+                        value={selectedActionPlanId}
+                        onchange={handleActionPlanChange}
+                        required
+                        class="slds-m-bottom_small">
+                    </lightning-combobox>
+                    <p class="slds-text-color_weak slds-text-body_small">
+                        Action plan tasks will be created on the underwriting case
+                    </p>
+                </div>
+
+                <!-- Action Plan Task Preview -->
+                <template lwc:if={hasSelectedActionPlan}>
+                    <div class="slds-box slds-theme_default slds-m-bottom_medium">
+                        <div class="slds-text-heading_small slds-m-bottom_small">
+                            <lightning-icon
+                                icon-name="utility:checklist"
+                                size="x-small"
+                                class="slds-m-right_xx-small">
+                            </lightning-icon>
+                            {selectedActionPlanDetails.name} Tasks
+                        </div>
+                        <p class="slds-text-body_small slds-text-color_weak slds-m-bottom_small">
+                            {selectedActionPlanDetails.description}
+                        </p>
+
+                        <!-- Task List -->
+                        <div class="slds-border_top slds-p-top_small">
+                            <template for:each={actionPlanTasks} for:item="task">
+                                <div key={task.subject} class="slds-grid slds-grid_align-spread slds-p-vertical_xx-small task-item">
+                                    <div class="slds-col slds-size_8-of-12">
+                                        <div class="slds-media slds-media_center">
+                                            <div class="slds-media__figure">
+                                                <lightning-icon
+                                                    icon-name="utility:task"
+                                                    size="x-small"
+                                                    class="slds-m-right_x-small">
+                                                </lightning-icon>
+                                            </div>
+                                            <div class="slds-media__body">
+                                                <p class="slds-text-body_small">{task.subject}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="slds-col slds-size_2-of-12 slds-text-align_center">
+                                        <lightning-badge label={task.priority} class={task.priorityClass}></lightning-badge>
+                                    </div>
+                                    <div class="slds-col slds-size_2-of-12 slds-text-align_right">
+                                        <p class="slds-text-body_small slds-text-color_weak">{task.dueDate}</p>
+                                    </div>
+                                </div>
+                            </template>
+                        </div>
+                    </div>
+                </template>
+
+                <!-- Notes Section -->
+                <div class="slds-form-element slds-m-bottom_medium">
+                    <lightning-textarea
+                        name="notes"
+                        label="Handoff Notes"
+                        placeholder="Add any notes or special instructions for the underwriter..."
+                        value={handoffNotes}
+                        onchange={handleNotesChange}
+                        max-length="2000"
+                        rows="4">
+                    </lightning-textarea>
+                </div>
+
+                <!-- Info Box -->
+                <div class="slds-box slds-theme_shade slds-m-bottom_medium">
+                    <div class="slds-media slds-media_center">
+                        <div class="slds-media__figure">
+                            <lightning-icon
+                                icon-name="utility:info"
+                                size="small"
+                                variant="info">
+                            </lightning-icon>
+                        </div>
+                        <div class="slds-media__body">
+                            <p class="slds-text-body_small">
+                                This will create a new Case assigned to the selected underwriter
+                                with action plan tasks. The opportunity stage will be updated to "Underwriting".
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="slds-text-align_right">
+                    <lightning-button
+                        label="Cancel"
+                        onclick={handleCancel}
+                        class="slds-m-right_x-small">
+                    </lightning-button>
+                    <lightning-button
+                        variant={submitButtonVariant}
+                        label={submitButtonLabel}
+                        onclick={handleSubmit}
+                        disabled={submitDisabled}
+                        icon-name="utility:forward">
+                    </lightning-button>
+                </div>
+            </template>
+        </div>
+    </lightning-card>
+</template>

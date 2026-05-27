@@ -1,0 +1,22 @@
+{
+  "orgName": "Opportunity Handoff - Scratch Org",
+  "edition": "Developer",
+  "features": ["EnableSetPasswordInApi", "Communities"],
+  "settings": {
+    "lightningExperienceSettings": {
+      "enableS1DesktopEnabled": true
+    },
+    "chatterSettings": {
+      "enableChatter": true
+    },
+    "mobileSettings": {
+      "enableS1EncryptedStoragePref2": false
+    },
+    "languageSettings": {
+      "enableTranslationWorkbench": true
+    },
+    "securitySettings": {
+      "enableAdminLoginAsAnyUser": true
+    }
+  }
+}

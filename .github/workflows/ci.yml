@@ -1,0 +1,52 @@
+name: Salesforce CI
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+
+jobs:
+  lint-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run ESLint
+        run: npm run lint
+
+      - name: Run LWC Jest tests
+        run: npm run test:unit
+
+      - name: Install Salesforce CLI
+        run: npm install -g @salesforce/cli
+
+      - name: Authenticate to DevHub
+        run: |
+          echo ${{ secrets.DEVHUB_SFDX_URL }} > ./DEVHUB_SFDX_URL.txt
+          sf org login sfdx-url --sfdx-url-file ./DEVHUB_SFDX_URL.txt --alias devhub --set-default-dev-hub
+        if: github.event_name == 'push'
+
+      - name: Create Scratch Org
+        run: sf org create scratch --definition-file config/project-scratch-def.json --alias ci-scratch --set-default --duration-days 1
+        if: github.event_name == 'push'
+
+      - name: Deploy to Scratch Org
+        run: sf project deploy start --target-org ci-scratch
+        if: github.event_name == 'push'
+
+      - name: Run Apex Tests
+        run: sf apex run test --test-level RunLocalTests --output-dir ./test-results --result-format human --target-org ci-scratch
+        if: github.event_name == 'push'
+
+      - name: Delete Scratch Org
+        run: sf org delete scratch --target-org ci-scratch --no-prompt
+        if: always() && github.event_name == 'push'

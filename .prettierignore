@@ -1,0 +1,25 @@
+# List files or directories to ignore for Prettier formatting
+
+package.json
+package-lock.json
+yarn.lock
+
+# LWC Jest configuration
+**/jest.config.js
+
+# Salesforce metadata
+**/*.xml
+**/*.json-meta.xml
+
+# Node modules
+node_modules/
+
+# Build artifacts
+coverage/
+test-results/
+
+# Git
+.git/
+
+# Logs
+*.log
